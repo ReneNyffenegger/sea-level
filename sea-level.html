@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <title>Sea level</title>
+
+  <style type="text/css">
+
+    canvas {
+/*    width:  100px;
+      height: 100px;  */
+      border: 1px solid black;
+    }
+
+  </style>
+
+  <script type='text/javascript' src='sea-level.js'></script>
+  <script type="text/javascript">
+
+   "use strict";
+
+    function main() {
+
+      var width=1440;
+      var height=721;
+
+      alert (z.length + ', ' + (width*height));
+
+//    alert(document.getElementsByTagName("canvas"));
+      var c=document.getElementsByTagName("canvas")[0];
+      c.width =width;
+      c.height=height;
+//    alert(c);
+      var ctx=c.getContext("2d");
+      var imgData=ctx.createImageData(width, height);
+//    alert(imgData);
+
+      for (var x=0; x<width; x++) {
+      for (var y=0; y<height; y++) {
+
+        if (z[y*width+x] > 0) {
+           setPixel(imgData, x, y, 50, 255, 50, 255);
+        }
+        else {
+           setPixel(imgData, x, y, 0, 0, 255, 255);
+        }
+
+      }}
+
+//    for (var x=0; x<100; x++) {
+//      setPixel(imgData, x,  0, 255,  0, 0, 255);
+//      setPixel(imgData, x, 99,   0,250, 0, 255);
+//    }
+//    for (var y=0; y<100; y++) {
+//      setPixel(imgData,  0, y,   0,  0,255, 255);
+//      setPixel(imgData, 99, y, 255,127,  0, 255);
+//    }
+      ctx.putImageData(imgData, 0, 0);
+    }
+
+
+    function setPixel(imageData, x, y, r, g, b, a) {
+        var index = (x + y * imageData.width) * 4;
+        imageData.data[index]     = r;
+        imageData.data[index + 1] = g;
+        imageData.data[index + 2] = b;
+        imageData.data[index + 3] = a;
+    }
+  </script>
+
+</head>
+
+<body onload='main();'>
+
+  <canvas>
+  </canvas>
+
+</body>
+</html>
