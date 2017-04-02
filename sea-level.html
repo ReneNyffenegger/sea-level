@@ -14,38 +14,32 @@
 
   </style>
 
-  <script type='text/javascript' src='sea-level.js'></script>
+  <!--  <script type='text/javascript' src='sea-level.js'></script> -->
   <script type="text/javascript">
 
    "use strict";
 
+    var seaLevels;
+    var imgData;
+    var width=1440;
+    var height=721;
+    var ctx;
+
     function main() {
 
-      var width=1440;
-      var height=721;
 
-      alert (z.length + ', ' + (width*height));
+//    alert (z.length + ', ' + (width*height));
 
 //    alert(document.getElementsByTagName("canvas"));
       var c=document.getElementsByTagName("canvas")[0];
       c.width =width;
       c.height=height;
 //    alert(c);
-      var ctx=c.getContext("2d");
-      var imgData=ctx.createImageData(width, height);
+      ctx=c.getContext("2d");
+      imgData=ctx.createImageData(width, height);
+      loadSeaLevels();
 //    alert(imgData);
 
-      for (var x=0; x<width; x++) {
-      for (var y=0; y<height; y++) {
-
-        if (z[y*width+x] > 0) {
-           setPixel(imgData, x, y, 50, 255, 50, 255);
-        }
-        else {
-           setPixel(imgData, x, y, 0, 0, 255, 255);
-        }
-
-      }}
 
 //    for (var x=0; x<100; x++) {
 //      setPixel(imgData, x,  0, 255,  0, 0, 255);
@@ -55,9 +49,48 @@
 //      setPixel(imgData,  0, y,   0,  0,255, 255);
 //      setPixel(imgData, 99, y, 255,127,  0, 255);
 //    }
-      ctx.putImageData(imgData, 0, 0);
     }
 
+    function draw(seaLevel) {
+//    alert(seaLevels[0]);
+      for (var x=0; x<width; x++) {
+      for (var y=0; y<height; y++) {
+
+        if (seaLevels[y*width+x] > 0) {
+           setPixel(imgData, x, y, 50, 255, 50, 255);
+        }
+        else {
+           setPixel(imgData, x, y, 0, 0, 255, 255);
+        }
+
+      }}
+
+      ctx.putImageData(imgData, 0, 0);
+
+    }
+
+    function loadSeaLevels() {
+
+      var oReq = new XMLHttpRequest();
+      oReq.open("GET", "sea-level.bin", true);
+      oReq.responseType = "arraybuffer";
+      oReq.send();
+      
+      oReq.onload = function (oEvent) {
+        var arrayBuffer = oReq.response; // Note: not oReq.responseText
+        if (arrayBuffer) {
+//        alert((arrayBuffer.byteLength / 2) + ', ' + (width*height) );
+          seaLevels = new Int16Array(arrayBuffer);
+          draw(0);          
+//        for (var i = 0; i < byteArray.byteLength; i++) {
+//          // do something with each byte in the array
+//        }
+        }
+      };
+      
+      oReq.send(null);
+
+    }
 
     function setPixel(imageData, x, y, r, g, b, a) {
         var index = (x + y * imageData.width) * 4;
