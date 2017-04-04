@@ -12,6 +12,9 @@
       border: 1px solid black;
     }
 
+    #seaLevel { width: 1000px; }
+    #seaLevelAct { width: 50px; }
+
   </style>
 
   <!--  <script type='text/javascript' src='sea-level.js'></script> -->
@@ -21,20 +24,22 @@
 
     var seaLevels;
     var imgData;
-    var width=1440;
-    var height=721;
+//  var width=1440; // 0.25 ...
+//  var height=721;
+    var width=1200;
+    var height=601;
     var ctx;
     var seaLevel;
-
-
+    var seaLevelAct;
 
 
 
     function main() {
 
 
-      seaLevel = document.getElementById      ('seaLevel');
-      var c    = document.getElementsByTagName("canvas")[0];
+      seaLevel    = document.getElementById      ('seaLevel');
+      seaLevelAct = document.getElementById      ('seaLevelAct');
+      var c       = document.getElementsByTagName("canvas")[0];
       ctx=c.getContext("2d");
       imgData=ctx.createImageData(width, height);
       c.width =width;
@@ -46,7 +51,27 @@
       seaLevel.min = -11000;
       seaLevel.max =   9000;
       seaLevel.value = 0;
-      seaLevel.oninput=function() {draw();};
+      seaLevel.oninput=function() {
+         seaLevelAct.value = seaLevel.value;
+      }
+      seaLevel.onchange=function() {draw();};
+//    seaLevelAct.oninput=function() {
+//       seaLevel.value = seaLevelAct.value;
+//    }
+      seaLevelAct.onblur=function() {
+        console.log('seaLevelAct.onblur');
+        seaLevel.value = seaLevelAct.value;
+        draw();
+      }
+      seaLevelAct.onkeyup=function(e) {
+        console.log('onkeyup: ' + e.key);
+        if (e.key == 'Enter') {
+          seaLevel.value = seaLevelAct.value;
+          draw();
+        }
+//      alert (e.key);
+//       seaLevel.value = seaLevelAct.value;
+      }
 
 //    alert(imgData);
 
@@ -64,7 +89,10 @@
 
     function draw() {
 
+      console.log('draw 1');
       var sl = seaLevel.value;
+      seaLevelAct.value = sl;
+
 //    console.log('draw: ' + sl);
       for (var x=0; x<width; x++) {
       for (var y=0; y<height; y++) {
@@ -78,14 +106,16 @@
 
       }}
 
+      console.log('draw 2');
       ctx.putImageData(imgData, 0, 0);
+      console.log('draw 3');
 
     }
 
     function loadSeaLevels() {
 
       var oReq = new XMLHttpRequest();
-      oReq.open("GET", "sea-level.bin", true);
+      oReq.open("GET", "sea-level.0.30.bin", true);
       oReq.responseType = "arraybuffer";
 
       oReq.onload = function (oEvent) {
@@ -116,7 +146,8 @@
   <canvas>
   </canvas>
 
-  <input id='seaLevel' type='range'>
+<br>
+<input id='seaLevel' type='range'> <input id='seaLevelAct'>&nbsp;m
 
 </body>
 </html>
