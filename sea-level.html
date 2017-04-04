@@ -24,21 +24,32 @@
     var width=1440;
     var height=721;
     var ctx;
+    var seaLevel;
+
+
+
+
 
     function main() {
 
 
-//    alert (z.length + ', ' + (width*height));
-
-//    alert(document.getElementsByTagName("canvas"));
-      var c=document.getElementsByTagName("canvas")[0];
-      c.width =width;
-      c.height=height;
-//    alert(c);
+      seaLevel = document.getElementById      ('seaLevel');
+      var c    = document.getElementsByTagName("canvas")[0];
       ctx=c.getContext("2d");
       imgData=ctx.createImageData(width, height);
+      c.width =width;
+      c.height=height;
+
       loadSeaLevels();
+
+
+      seaLevel.min = -11000;
+      seaLevel.max =   9000;
+      seaLevel.value = 0;
+      seaLevel.oninput=function() {draw();};
+
 //    alert(imgData);
+
 
 
 //    for (var x=0; x<100; x++) {
@@ -51,12 +62,14 @@
 //    }
     }
 
-    function draw(seaLevel) {
-//    alert(seaLevels[0]);
+    function draw() {
+
+      var sl = seaLevel.value;
+//    console.log('draw: ' + sl);
       for (var x=0; x<width; x++) {
       for (var y=0; y<height; y++) {
 
-        if (seaLevels[y*width+x] > 0) {
+        if (seaLevels[y*width+x] > sl) {
            setPixel(imgData, x, y, 50, 255, 50, 255);
         }
         else {
@@ -74,20 +87,15 @@
       var oReq = new XMLHttpRequest();
       oReq.open("GET", "sea-level.bin", true);
       oReq.responseType = "arraybuffer";
-      oReq.send();
-      
+
       oReq.onload = function (oEvent) {
         var arrayBuffer = oReq.response; // Note: not oReq.responseText
         if (arrayBuffer) {
-//        alert((arrayBuffer.byteLength / 2) + ', ' + (width*height) );
           seaLevels = new Int16Array(arrayBuffer);
-          draw(0);          
-//        for (var i = 0; i < byteArray.byteLength; i++) {
-//          // do something with each byte in the array
-//        }
+          draw();
         }
       };
-      
+
       oReq.send(null);
 
     }
@@ -107,6 +115,8 @@
 
   <canvas>
   </canvas>
+
+  <input id='seaLevel' type='range'>
 
 </body>
 </html>
